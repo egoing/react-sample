@@ -79,8 +79,56 @@ function Create(props) {
     </article>
   );
 }
+function Update(props) {
+  var [title, setTitle] = useState(props.data.title);
+  var [description, setDescription] = useState(props.data.description);
+
+  return (
+    <article>
+      <h1>Update</h1>
+      <form
+        action="topics"
+        method="put"
+        onSubmit={function(e) {
+          e.preventDefault();
+          props.onUpdate({
+            id: props.data.id,
+            title: e.target.title.value,
+            description: e.target.description.value
+          });
+          e.target.reset();
+        }}
+      >
+        <p>
+          <input
+            type="text"
+            name="title"
+            placeholder="title"
+            value={title}
+            onChange={function(e) {
+              setTitle(e.target.value);
+            }}
+          />
+        </p>
+        <p>
+          <textarea
+            name="description"
+            placeholder="description"
+            value={description}
+            onChange={function(e) {
+              setDescription(e.target.value);
+            }}
+          />
+        </p>
+        <p>
+          <input type="submit" />
+        </p>
+      </form>
+    </article>
+  );
+}
 function Control(props) {
-  return ( 
+  return (
     <ul>
       <li>
         <input
@@ -91,12 +139,21 @@ function Control(props) {
           }}
         />
       </li>
+      <li>
+        <input
+          type="button"
+          value="update"
+          onClick={function() {
+            props.onChangeMode("UPDATE");
+          }}
+        />
+      </li>
     </ul>
   );
 }
 export default function App() {
-  var [mode, setMode] = useState("CREATE");
-  var [selectedId, setSelectedId] = useState(null);
+  var [mode, setMode] = useState("UPDATE");
+  var [selectedId, setSelectedId] = useState(1);
   var [nextId, setNextId] = useState(4);
   var [topics, setTopics] = useState([
     { id: 1, title: "html", description: "html is..." },
@@ -126,6 +183,33 @@ export default function App() {
           setSelectedId(nextId);
           setMode("READ");
           setNextId(nextId + 1);
+        }}
+      />
+    );
+  } else if (mode === "UPDATE") {
+    var selectedTopic = null;
+    for (var i = 0; i < topics.length; i++) {
+      if (topics[i].id === selectedId) {
+        selectedTopic = topics[i];
+        break;
+      }
+    }
+    article = (
+      <Update
+        data={selectedTopic}
+        onUpdate={function(data) {
+          console.log("update");
+          var newTopics = [...topics];
+          for (var i = 0; i < newTopics.length; i++) {
+            console.log(newTopics[i].id, data.id);
+            if (newTopics[i].id === data.id) {
+              newTopics[i].title = data.title;
+              newTopics[i].description = data.description;
+              break;
+            }
+          }
+          setTopics(newTopics);
+          setMode("READ");
         }}
       />
     );
