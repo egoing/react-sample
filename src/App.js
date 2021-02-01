@@ -1,9 +1,19 @@
-import React from "react";
+import React, { useState } from "react";
 import "./style.css";
-function Header() {
+function Header(props) {
   return (
     <header>
-      <h1>WEB</h1>
+      <h1>
+        <a
+          href="/"
+          onClick={function(e) {
+            e.preventDefault();
+            props.onChangeMode();
+          }}
+        >
+          WEB
+        </a>
+      </h1>
     </header>
   );
 }
@@ -13,7 +23,16 @@ function Nav(props) {
   for (var i = 0; i < d.length; i++) {
     tag.push(
       <li key={d[i].id}>
-        <a href={"/" + d[i].id}>{d[i].title}</a>
+        <a
+          href={"/" + d[i].id}
+          data-id={d[i].id}
+          onClick={function(e) {
+            e.preventDefault();
+            props.onChangeMode(Number(e.target.dataset.id));
+          }}
+        >
+          {d[i].title}
+        </a>
       </li>
     );
   }
@@ -23,29 +42,6 @@ function Nav(props) {
     </nav>
   );
 }
-
-/* 중급자들은 map을 선호합니다. 
-function Nav(props) {
-  return (
-    <nav>
-      <ul>
-        {props.data.map(function(e) {
-          return (
-            <li>
-              <a
-                href={"/" + e.id}
-              >
-                {e.title}
-              </a>
-            </li>
-          );
-        })}
-      </ul>
-    </nav>
-  );
-}
-*/
-
 function Article(props) {
   return (
     <article>
@@ -55,17 +51,43 @@ function Article(props) {
   );
 }
 export default function App() {
+  var [mode, setMode] = useState("WELCOME");
+  var [selectedId, setSelectedId] = useState(null);
+  var topics = [
+    { id: 1, title: "html", description: "html is..." },
+    { id: 2, title: "css", description: "css is..." },
+    { id: 3, title: "js", description: "js is..." }
+  ];
+  var article = null;
+  if (mode === "WELCOME") {
+    article = <Article title="Welcome" description="Hello, WEB" />;
+  } else if (mode === "READ") {
+    for (var i = 0; i < topics.length; i++) {
+      if (topics[i].id === selectedId) {
+        article = (
+          <Article
+            title={topics[i].title}
+            description={topics[i].description}
+          />
+        );
+      }
+    }
+  }
   return (
     <div>
-      <Header />
-      <Nav
-        data={[
-          { id: 1, title: "html", description: "html is..." },
-          { id: 2, title: "css", description: "css is..." },
-          { id: 3, title: "js", description: "js is..." }
-        ]}
+      <Header
+        onChangeMode={function() {
+          setMode("WELCOME");
+        }}
       />
-      <Article title="제목" description="본문" />
+      <Nav
+        data={topics}
+        onChangeMode={function(topic_id) {
+          setMode("READ");
+          setSelectedId(topic_id);
+        }}
+      />
+      {article}
     </div>
   );
 }
