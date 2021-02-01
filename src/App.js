@@ -148,6 +148,15 @@ function Control(props) {
           }}
         />
       </li>
+      <li>
+        <input
+          type="button"
+          value="delete"
+          onClick={function() {
+            props.onChangeMode("DELETE");
+          }}
+        />
+      </li>
     </ul>
   );
 }
@@ -198,10 +207,8 @@ export default function App() {
       <Update
         data={selectedTopic}
         onUpdate={function(data) {
-          console.log("update");
           var newTopics = [...topics];
           for (var i = 0; i < newTopics.length; i++) {
-            console.log(newTopics[i].id, data.id);
             if (newTopics[i].id === data.id) {
               newTopics[i].title = data.title;
               newTopics[i].description = data.description;
@@ -231,6 +238,19 @@ export default function App() {
       {article}
       <Control
         onChangeMode={function(mode) {
+          if (mode === "DELETE") {
+            var newTopics = [];
+            for (var i = 0; i < topics.length; i++) {
+              if (topics[i].id === selectedId) {
+                continue;
+              } else {
+                newTopics.push(topics[i]);
+              }
+            }
+            console.log(newTopics);
+            setTopics(newTopics);
+            mode = "WELCOME";
+          }
           setMode(mode);
         }}
       />
