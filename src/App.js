@@ -50,14 +50,59 @@ function Article(props) {
     </article>
   );
 }
+function Create(props) {
+  return (
+    <article>
+      <h1>Create</h1>
+      <form
+        action="topics"
+        method="post"
+        onSubmit={function(e) {
+          e.preventDefault();
+          props.onCreate({
+            title: e.target.title.value,
+            description: e.target.description.value
+          });
+          e.target.reset();
+        }}
+      >
+        <p>
+          <input type="text" name="title" placeholder="title" />
+        </p>
+        <p>
+          <textarea name="description" placeholder="description" />
+        </p>
+        <p>
+          <input type="submit" />
+        </p>
+      </form>
+    </article>
+  );
+}
+function Control(props) {
+  return ( 
+    <ul>
+      <li>
+        <input
+          type="button"
+          value="create"
+          onClick={function() {
+            props.onChangeMode("CREATE");
+          }}
+        />
+      </li>
+    </ul>
+  );
+}
 export default function App() {
-  var [mode, setMode] = useState("WELCOME");
+  var [mode, setMode] = useState("CREATE");
   var [selectedId, setSelectedId] = useState(null);
-  var topics = [
+  var [nextId, setNextId] = useState(4);
+  var [topics, setTopics] = useState([
     { id: 1, title: "html", description: "html is..." },
     { id: 2, title: "css", description: "css is..." },
     { id: 3, title: "js", description: "js is..." }
-  ];
+  ]);
   var article = null;
   if (mode === "WELCOME") {
     article = <Article title="Welcome" description="Hello, WEB" />;
@@ -72,6 +117,18 @@ export default function App() {
         );
       }
     }
+  } else if (mode === "CREATE") {
+    article = (
+      <Create
+        onCreate={function(data) {
+          data.id = nextId;
+          setTopics([...topics, data]);
+          setSelectedId(nextId);
+          setMode("READ");
+          setNextId(nextId + 1);
+        }}
+      />
+    );
   }
   return (
     <div>
@@ -88,6 +145,11 @@ export default function App() {
         }}
       />
       {article}
+      <Control
+        onChangeMode={function(mode) {
+          setMode(mode);
+        }}
+      />
     </div>
   );
 }
