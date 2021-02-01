@@ -7,28 +7,50 @@ function Header() {
     </header>
   );
 }
-function Nav() {
+function Nav(props) {
+  var tag = [];
+  var d = props.data;
+  for (var i = 0; i < d.length; i++) {
+    tag.push(
+      <li key={d[i].id}>
+        <a href={"/" + d[i].id}>{d[i].title}</a>
+      </li>
+    );
+  }
+  return (
+    <nav>
+      <ul>{tag}</ul>
+    </nav>
+  );
+}
+
+/* 중급자들은 map을 선호합니다. 
+function Nav(props) {
   return (
     <nav>
       <ul>
-        <li>
-          <a href="/1">html</a>
-        </li>
-        <li>
-          <a href="/2">css</a>ewrewr
-        </li>
-        <li>
-          <a href="/3">javascript</a>
-        </li>
+        {props.data.map(function(e) {
+          return (
+            <li>
+              <a
+                href={"/" + e.id}
+              >
+                {e.title}
+              </a>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );
 }
-function Article() {
+*/
+
+function Article(props) {
   return (
     <article>
-      <h2>Welcome</h2>
-      Hello, WEB!
+      <h2>{props.title}</h2>
+      {props.description}
     </article>
   );
 }
@@ -36,8 +58,14 @@ export default function App() {
   return (
     <div>
       <Header />
-      <Nav />
-      <Article />
+      <Nav
+        data={[
+          { id: 1, title: "html", description: "html is..." },
+          { id: 2, title: "css", description: "css is..." },
+          { id: 3, title: "js", description: "js is..." }
+        ]}
+      />
+      <Article title="제목" description="본문" />
     </div>
   );
 }
